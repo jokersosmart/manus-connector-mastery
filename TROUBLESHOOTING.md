@@ -72,6 +72,27 @@ Fine-grained Token 的「Repository access」設定，僅包含權杖建立時�
 
 ---
 
+## 問題四：Fine-grained Token 缺少寫入權限，Push 被拒絕
+
+### 問題描述
+
+使用新權杖成功 clone 公開儲存庫後，本地 commit 也順利完成，但在執行 `git push origin main` 時收到 403 錯誤：
+
+```
+remote: Permission to jokersosmart/manus-connector-mastery.git denied to jokersosmart.
+fatal: unable to access '...': The requested URL returned error: 403
+```
+
+### 根本原因
+
+第一個 Fine-grained Token 的 **Contents** 權限僅設為 **Read**，缺少 **Write** 權限。Clone（讀取）操作可以成功，但 Push（寫入）操作被 GitHub 伺服器拒絕。
+
+### 解決方案
+
+由使用者重新產生了一個新的 Fine-grained Token，並在建立時確保 **Contents** 權限設為 **Read and write**，同時在 **Repository access** 中包含了 `manus-connector-mastery` 儲存庫。使用新權杖後，`git push` 成功執行。
+
+---
+
 ## 經驗總結
 
 1. **Fine-grained Token 的權限是靜態綁定的**：它不會自動繼承新建立的儲存庫。如果需要存取新儲存庫，必須回到 Token 設定頁面手動更新 Repository access。
